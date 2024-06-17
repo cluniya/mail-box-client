@@ -1,20 +1,16 @@
-// src/SignupForm.js
+// src/components/SignUpSignIn/LoginForm.js
 import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
-import './SignupForm.css'; // Import the custom CSS file
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate ,Link} from 'react-router-dom'; // Import useNavigate hook
 
-const SignupForm = () => {
+const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPassword: '',
   });
 
   const [validated, setValidated] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const history = useNavigate();
 
   const API_KEY = 'AIzaSyAl1NubGXzqIfmpo4ldoaV4r5PZkooQpBg';
 
@@ -26,16 +22,17 @@ const SignupForm = () => {
     });
   };
 
+  const history = useNavigate(); // Initialize useNavigate hook
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
-    if (form.checkValidity() === false || formData.password !== formData.confirmPassword) {
+    if (form.checkValidity() === false) {
       e.stopPropagation();
-      setError('Passwords do not match or form is invalid.');
     } else {
       try {
         const response = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`,
+          `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`,
           {
             method: 'POST',
             headers: {
@@ -52,14 +49,13 @@ const SignupForm = () => {
         if (!response.ok) {
           throw new Error(data.error.message);
         }
-        history('/signin')
-        console.log('Form submitted:', data);
-        setSuccess('Signup successful! Please check your email to verify your account.');
+        console.log('Login successful:', data);
         setError(null);
+        localStorage.setItem('token', data.idToken); // Store token in localStorage
+        history('/dummy'); // Redirect to dummy screen upon successful login
       } catch (error) {
-        console.error('Error signing up:', error.message);
-        setError(`Error: ${error.message}`);
-        setSuccess(null);
+        console.error('Error logging in:', error.message);
+        setError(`${error.message}`);
       }
     }
     setValidated(true);
@@ -71,7 +67,7 @@ const SignupForm = () => {
         <Col md="4">
           <Card>
             <Card.Body>
-              <h2 className="mb-4 text-center">SignUp</h2>
+              <h2 className="mb-4 text-center">Login</h2>
               <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Form.Group controlId="formEmail" className="mb-3">
                   <Form.Control
@@ -97,34 +93,20 @@ const SignupForm = () => {
                     onChange={handleChange}
                   />
                   <Form.Control.Feedback type="invalid">
-                    Please enter a password.
-                  </Form.Control.Feedback>
-                </Form.Group>
-
-                <Form.Group controlId="formConfirmPassword" className="mb-3">
-                  <Form.Control
-                    required
-                    type="password"
-                    placeholder="Confirm Password"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    Passwords do not match.
+                    Please enter your password.
                   </Form.Control.Feedback>
                 </Form.Group>
 
                 {error && <div className="alert alert-danger">{error}</div>}
-                {success && <div className="alert alert-success">{success}</div>}
 
                 <div className="d-grid">
                   <Button variant="primary" type="submit" className="custom-button mb-3">
-                    Sign up
+                    Log in
                   </Button>
                 </div>
                 <div className="text-center">
-                  <Link to="/signin" className="text-muted">Have an account? Login</Link>
+                  <Link to="/" className="text-muted"> Create New Account</Link><br/>
+                  <Link to="#" className="text-muted">Forgot password?</Link>
                 </div>
               </Form>
             </Card.Body>
@@ -135,4 +117,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default LoginForm;
