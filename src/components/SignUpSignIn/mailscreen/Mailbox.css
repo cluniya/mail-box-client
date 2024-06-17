@@ -1,0 +1,50 @@
+.mailbox-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .mailbox-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .mailbox-content {
+    display: flex;
+  }
+  
+  .mail-list {
+    width: 30%;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    max-height: 70vh;
+  }
+  
+  .mail-list .list-group-item {
+    cursor: pointer;
+    padding: 15px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .mail-list .list-group-item:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .mail-details {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: 70vh;
+  }
+  
+  .mail-details h5 {
+    margin-top: 0;
+  }
+  
+  .mail-details p {
+    white-space: pre-wrap;
+  }
+  
