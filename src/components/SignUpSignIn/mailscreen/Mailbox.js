@@ -1,37 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import React, { useEffect,useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button, ListGroup, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { fetchMails,markAsRead } from '../../../Store/mailSlice';
 import './Mailbox.css'; // Add custom styles
 
 const Mailbox = () => {
-  const [mails, setMails] = useState([]);
   const [selectedMail, setSelectedMail] = useState(null);
-//   const currentUserEmail = useSelector((state) => state.auth.email);
-  const currentUserEmail = "chandan1@test.com";
+  const [showMailModal, setShowMailModal] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const currentUserEmail = useSelector((state) => state.auth.email);
+  const mails = useSelector((state) => state.mail.mails);
 
   useEffect(() => {
-    const fetchMails = async () => {
-      try {
-        const response = await fetch(`https://mail-box-client-33a30-default-rtdb.firebaseio.com/emails/${currentUserEmail.split('@')[0]}/inbox.json`);
-        if (response.ok) {
-          const data = await response.json();
-          const loadedMails = [];
-          for (const key in data) {
-            loadedMails.push({ id: key, ...data[key] });
-          }
-          setMails(loadedMails);
-        } else {
-          throw new Error('Failed to fetch emails.');
-        }
-      } catch (error) {
-        console.error('Error fetching emails:', error);
-      }
-    };
-
-    fetchMails();
-  }, [currentUserEmail]);
+    if (currentUserEmail) {
+      dispatch(fetchMails(currentUserEmail));
+    }
+  }, [currentUserEmail, dispatch]);
 
   const handleComposeClick = () => {
     navigate('/compose');
@@ -39,6 +25,14 @@ const Mailbox = () => {
 
   const handleMailClick = (mail) => {
     setSelectedMail(mail);
+    setShowMailModal(true);
+    if (!mail.read) {
+      dispatch(markAsRead({ userEmail: currentUserEmail, mailId: mail.id }));
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowMailModal(false);
   };
 
   return (
@@ -51,30 +45,30 @@ const Mailbox = () => {
       </div>
       <div className="mailbox-content">
         <div className="mail-list">
-          <ul className="list-group">
+          <ListGroup>
             {mails.map((mail) => (
-              <li
+              <ListGroup.Item
                 key={mail.id}
-                className="list-group-item"
+                action
                 onClick={() => handleMailClick(mail)}
+                className={!mail.read ? 'unread-mail' : ''}
               >
                 <strong>{mail.senderEmail}</strong> - {mail.subject}
-              </li>
+                {!mail.read && <span className="blue-dot"></span>}
+              </ListGroup.Item>
             ))}
-          </ul>
+          </ListGroup>
         </div>
-        <div className="mail-details">
-          {selectedMail ? (
-            <div>
-              <h5>{selectedMail.subject}</h5>
-              <p>{selectedMail.content}</p>
-              <small>From: {selectedMail.senderEmail}</small><br />
-              <small>{new Date(selectedMail.timestamp).toLocaleString()}</small>
-            </div>
-          ) : (
-            <p>Select an email to read</p>
-          )}
-        </div>
+        <Modal show={showMailModal} onHide={handleCloseModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>{selectedMail?.subject}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>{selectedMail?.content}</p>
+            <p>From: {selectedMail?.senderEmail}</p>
+            <p>{new Date(selectedMail?.timestamp).toLocaleString()}</p>
+          </Modal.Body>
+        </Modal>
       </div>
     </div>
   );

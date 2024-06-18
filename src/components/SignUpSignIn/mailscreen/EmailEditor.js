@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, InputGroup, Button } from "react-bootstrap";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const EmailEditor = () => {
   const [editorState, setEditorState] = useState(null);
@@ -10,8 +10,8 @@ const EmailEditor = () => {
   const [subject, setSubject] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState(null);
-//   const currentUserEmail = useSelector((state) => state.auth.email);
-  const currentUserEmail = 'chandan@test.com'
+  const currentUserEmail = useSelector((state) => state.auth.email);
+  // const currentUserEmail = 'chandan@test.com'
 
   const handleEditorStateChange = (editorState) => {
     setEditorState(editorState);

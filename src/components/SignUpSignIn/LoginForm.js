@@ -52,6 +52,7 @@ const LoginForm = () => {
         console.log('Login successful:', data);
         setError(null);
         localStorage.setItem('token', data.idToken); // Store token in localStorage
+        localStorage.setItem('email', data.email); // Store token in localStorage
         history('/dummy'); // Redirect to dummy screen upon successful login
       } catch (error) {
         console.error('Error logging in:', error.message);
