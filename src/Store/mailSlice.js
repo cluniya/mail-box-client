@@ -14,6 +14,13 @@ export const markAsRead = createAsyncThunk('mail/markAsRead', async ({ userEmail
   return mailId;
 });
 
+export const deleteMail = createAsyncThunk('mail/deleteMail', async ({ userEmail, mailId }) => {
+  await fetch(`https://mail-box-client-33a30-default-rtdb.firebaseio.com/emails/${userEmail.split('@')[0]}/inbox/${mailId}.json`, {
+    method: 'DELETE',
+  });
+  return mailId;
+});
+
 const mailSlice = createSlice({
   name: 'mail',
   initialState: {
@@ -50,6 +57,9 @@ const mailSlice = createSlice({
         if (mail) {
           mail.read = true;
         }
+      })
+      .addCase(deleteMail.fulfilled, (state, action) => {
+        state.mails = state.mails.filter((mail) => mail.id !== action.payload);
       });
   },
 });

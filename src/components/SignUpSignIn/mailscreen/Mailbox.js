@@ -1,8 +1,8 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { fetchMails,markAsRead } from '../../../Store/mailSlice';
+import { fetchMails, markAsRead, deleteMail } from '../../../Store/mailSlice';
 import './Mailbox.css'; // Add custom styles
 
 const Mailbox = () => {
@@ -35,6 +35,10 @@ const Mailbox = () => {
     setShowMailModal(false);
   };
 
+  const handleDeleteMail = (mailId) => {
+    dispatch(deleteMail({ userEmail: currentUserEmail, mailId }));
+  };
+
   return (
     <div className="mailbox-container">
       <div className="mailbox-header">
@@ -55,6 +59,9 @@ const Mailbox = () => {
               >
                 <strong>{mail.senderEmail}</strong> - {mail.subject}
                 {!mail.read && <span className="blue-dot"></span>}
+                <Button variant="danger" onClick={() => handleDeleteMail(mail.id)}>
+                  Delete
+                </Button>
               </ListGroup.Item>
             ))}
           </ListGroup>

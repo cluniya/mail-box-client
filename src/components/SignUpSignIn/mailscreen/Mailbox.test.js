@@ -4,11 +4,12 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
 import Mailbox from './Mailbox';
-import { fetchMails, markAsRead } from '../../../Store/mailSlice';
+import { fetchMails, markAsRead, deleteMail } from '../../../Store/mailSlice';
 
 jest.mock('../../../Store/mailSlice', () => ({
   fetchMails: jest.fn(),
   markAsRead: jest.fn(),
+  deleteMail: jest.fn(),
 }));
 
 const mockStore = configureStore([]);
@@ -38,6 +39,7 @@ describe('Mailbox', () => {
     expect(screen.getByText('Inbox')).toBeInTheDocument();
     expect(screen.getByText('Compose')).toBeInTheDocument();
     expect(screen.getByText('sender@example.com - Test Mail')).toBeInTheDocument();
+    expect(screen.getByText('Delete')).toBeInTheDocument();
   });
 
   it('should dispatch fetchMails on mount', () => {
@@ -70,5 +72,13 @@ describe('Mailbox', () => {
     fireEvent.click(closeButton);
 
     expect(screen.queryByText('This is a test mail.')).not.toBeInTheDocument();
+  });
+
+  it('should delete the mail on delete button click', () => {
+    renderComponent();
+    const deleteButton = screen.getByText('Delete');
+    fireEvent.click(deleteButton);
+
+    expect(deleteMail).toHaveBeenCalledWith({ userEmail: 'test@example.com', mailId: '1' });
   });
 });
