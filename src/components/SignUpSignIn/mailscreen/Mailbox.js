@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { fetchMails, markAsRead, deleteMail } from '../../../Store/mailSlice';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { fetchMails, fetchSentMails, markAsRead, deleteMail } from '../../../Store/mailSlice';
 import './Mailbox.css'; // Add custom styles
 
 const Mailbox = () => {
@@ -10,14 +10,20 @@ const Mailbox = () => {
   const [showMailModal, setShowMailModal] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const currentUserEmail = useSelector((state) => state.auth.email);
   const mails = useSelector((state) => state.mail.mails);
+  const sentMails = useSelector((state) => state.mail.sentMails);
 
   useEffect(() => {
     if (currentUserEmail) {
-      dispatch(fetchMails(currentUserEmail));
+      if (location.pathname === '/sent') {
+        dispatch(fetchSentMails(currentUserEmail));
+      } else {
+        dispatch(fetchMails(currentUserEmail));
+      }
     }
-  }, [currentUserEmail, dispatch]);
+  }, [currentUserEmail, dispatch, location.pathname]);
 
   const handleComposeClick = () => {
     navigate('/compose');
@@ -39,10 +45,12 @@ const Mailbox = () => {
     dispatch(deleteMail({ userEmail: currentUserEmail, mailId }));
   };
 
+  const mailList = location.pathname === '/sent' ? sentMails : mails;
+
   return (
     <div className="mailbox-container">
       <div className="mailbox-header">
-        <h2>Inbox</h2>
+        <h2>{location.pathname === '/sent' ? 'Sent' : 'Inbox'}</h2>
         <Button variant="primary" onClick={handleComposeClick}>
           Compose
         </Button>
@@ -50,7 +58,7 @@ const Mailbox = () => {
       <div className="mailbox-content">
         <div className="mail-list">
           <ListGroup>
-            {mails.map((mail) => (
+            {mailList.map((mail) => (
               <ListGroup.Item
                 key={mail.id}
                 action
