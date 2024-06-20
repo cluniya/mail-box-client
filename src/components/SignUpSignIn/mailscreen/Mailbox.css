@@ -1,12 +1,36 @@
-.unread-mail {
+/* Mailbox.css */
+
+.mailbox-container {
+  padding: 20px;
+}
+
+.mailbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.mailbox-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.mail-list .unread-mail {
   font-weight: bold;
 }
 
-.blue-dot {
-  width: 10px;
-  height: 10px;
+.mail-list .blue-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
   background-color: blue;
   border-radius: 50%;
-  display: inline-block;
   margin-left: 10px;
+}
+
+.mail-list .list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

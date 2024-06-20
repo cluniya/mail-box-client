@@ -81,12 +81,12 @@ const EmailEditor = () => {
   };
 
   return (
-    <Form onSubmit={(e) => e.preventDefault()} className="p-3 mt-5 mt-lg-0">
+    <Form onSubmit={(e) => e.preventDefault()} className="p-4 mt-5 mt-lg-0">
       <InputGroup className="mb-3">
         <InputGroup.Text id="basic-addon1">To</InputGroup.Text>
         <Form.Control
           type="email"
-          placeholder="example@gmail.com"
+          placeholder="example@mail.com"
           value={toEmail}
           onChange={(e) => setToEmail(e.target.value)}
           required
