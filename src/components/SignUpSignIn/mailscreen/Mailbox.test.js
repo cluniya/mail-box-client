@@ -4,10 +4,11 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
 import Mailbox from './Mailbox';
-import { fetchMails, markAsRead, deleteMail } from '../../../Store/mailSlice';
+import { fetchMails, fetchSentMails, markAsRead, deleteMail } from '../../../Store/mailSlice';
 
 jest.mock('../../../Store/mailSlice', () => ({
   fetchMails: jest.fn(),
+  fetchSentMails: jest.fn(),
   markAsRead: jest.fn(),
   deleteMail: jest.fn(),
 }));
@@ -20,18 +21,19 @@ describe('Mailbox', () => {
   beforeEach(() => {
     store = mockStore({
       auth: { email: 'test@example.com' },
-      mail: { mails: [{ id: '1', senderEmail: 'sender@example.com', subject: 'Test Mail', content: 'This is a test mail.', timestamp: Date.now(), read: false }] },
+      mail: { mails: [{ id: '1', senderEmail: 'sender@example.com', subject: 'Test Mail', content: 'This is a test mail.', timestamp: Date.now(), read: false }], sentMails: [{ id: '2', senderEmail: 'test@example.com', recipientEmail: 'recipient@example.com', subject: 'Sent Mail', content: 'This is a sent mail.', timestamp: Date.now(), read: true }] },
     });
     store.dispatch = jest.fn();
   });
 
-  const renderComponent = () =>
+  const renderComponent = (path = '/') =>
     render(
       <Provider store={store}>
         <BrowserRouter>
           <Mailbox />
         </BrowserRouter>
-      </Provider>
+      </Provider>,
+      { wrapper: ({ children }) => <BrowserRouter initialEntries={[path]}>{children}</BrowserRouter> }
     );
 
   it('should render the Mailbox component', () => {
@@ -39,7 +41,6 @@ describe('Mailbox', () => {
     expect(screen.getByText('Inbox')).toBeInTheDocument();
     expect(screen.getByText('Compose')).toBeInTheDocument();
     expect(screen.getByText('sender@example.com - Test Mail')).toBeInTheDocument();
-    expect(screen.getByText('Delete')).toBeInTheDocument();
   });
 
   it('should dispatch fetchMails on mount', () => {
@@ -74,7 +75,18 @@ describe('Mailbox', () => {
     expect(screen.queryByText('This is a test mail.')).not.toBeInTheDocument();
   });
 
-  it('should delete the mail on delete button click', () => {
+  it('should render the Sent Mails component', () => {
+    renderComponent('/sent');
+    expect(screen.getByText('Sent')).toBeInTheDocument();
+    expect(screen.getByText('recipient@example.com - Sent Mail')).toBeInTheDocument();
+  });
+
+  it('should dispatch fetchSentMails on /sent route mount', () => {
+    renderComponent('/sent');
+    expect(fetchSentMails).toHaveBeenCalledWith('test@example.com');
+  });
+
+  it('should delete a mail on delete button click', () => {
     renderComponent();
     const deleteButton = screen.getByText('Delete');
     fireEvent.click(deleteButton);

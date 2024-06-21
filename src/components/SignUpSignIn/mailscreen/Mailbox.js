@@ -12,6 +12,7 @@ const Mailbox = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentUserEmail = useSelector((state) => state.auth.email);
+  // const mails = useSelector((state) => state.mail.mails);
   const mails = useSelector((state) => state.mail.mails);
   const sentMails = useSelector((state) => state.mail.sentMails);
 
@@ -22,6 +23,14 @@ const Mailbox = () => {
       } else {
         dispatch(fetchMails(currentUserEmail));
       }
+      const intervalId = setInterval(() => {
+        if (location.pathname === '/sent') {
+          dispatch(fetchSentMails(currentUserEmail));
+        } else {
+          dispatch(fetchMails(currentUserEmail));
+        }
+      }, 2000);
+      return () => clearInterval(intervalId);
     }
   }, [currentUserEmail, dispatch, location.pathname]);
 
