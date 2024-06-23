@@ -1,38 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+// src/components/SignUpSignIn/mailscreen/Mailbox.js
+import React, { useState } from 'react';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchMails, fetchSentMails, markAsRead, deleteMail } from '../../../Store/mailSlice';
+import { useSelector } from 'react-redux';
+import useMails from '../../../hooks/useMails';
 import './Mailbox.css'; // Add custom styles
 
 const Mailbox = () => {
   const [selectedMail, setSelectedMail] = useState(null);
   const [showMailModal, setShowMailModal] = useState(false);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const currentUserEmail = useSelector((state) => state.auth.email);
-  // const mails = useSelector((state) => state.mail.mails);
-  const mails = useSelector((state) => state.mail.mails);
-  const sentMails = useSelector((state) => state.mail.sentMails);
 
-  useEffect(() => {
-    if (currentUserEmail) {
-      if (location.pathname === '/sent') {
-        dispatch(fetchSentMails(currentUserEmail));
-      } else {
-        dispatch(fetchMails(currentUserEmail));
-      }
-      const intervalId = setInterval(() => {
-        if (location.pathname === '/sent') {
-          dispatch(fetchSentMails(currentUserEmail));
-        } else {
-          dispatch(fetchMails(currentUserEmail));
-        }
-      }, 2000);
-      return () => clearInterval(intervalId);
-    }
-  }, [currentUserEmail, dispatch, location.pathname]);
+  const { mails, sentMails, markAsRead, deleteMail } = useMails(currentUserEmail, location.pathname);
 
   const handleComposeClick = () => {
     navigate('/compose');
@@ -42,7 +23,7 @@ const Mailbox = () => {
     setSelectedMail(mail);
     setShowMailModal(true);
     if (!mail.read) {
-      dispatch(markAsRead({ userEmail: currentUserEmail, mailId: mail.id }));
+      markAsRead({ userEmail: currentUserEmail, mailId: mail.id });
     }
   };
 
@@ -51,7 +32,7 @@ const Mailbox = () => {
   };
 
   const handleDeleteMail = (mailId) => {
-    dispatch(deleteMail({ userEmail: currentUserEmail, mailId }));
+    deleteMail({ userEmail: currentUserEmail, mailId });
   };
 
   const mailList = location.pathname === '/sent' ? sentMails : mails;

@@ -1,3 +1,4 @@
+// src/Store/mailSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const fetchMails = createAsyncThunk('mail/fetchMails', async (userEmail) => {
@@ -39,6 +40,9 @@ const mailSlice = createSlice({
     setMails: (state, action) => {
       state.mails = action.payload;
     },
+    setSentMails: (state, action) => {
+      state.sentMails = action.payload;
+    },
     markMailRead: (state, action) => {
       const mail = state.mails.find((mail) => mail.id === action.payload);
       if (mail) {
@@ -59,16 +63,9 @@ const mailSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message;
       })
-      .addCase(fetchSentMails.pending, (state) => {
-        state.status = 'loading';
-      })
       .addCase(fetchSentMails.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.sentMails = action.payload;
-      })
-      .addCase(fetchSentMails.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
       })
       .addCase(markAsRead.fulfilled, (state, action) => {
         const mail = state.mails.find((mail) => mail.id === action.payload);
@@ -82,5 +79,5 @@ const mailSlice = createSlice({
   },
 });
 
-export const { setMails, markMailRead } = mailSlice.actions;
+export const { setMails, setSentMails, markMailRead } = mailSlice.actions;
 export default mailSlice.reducer;
