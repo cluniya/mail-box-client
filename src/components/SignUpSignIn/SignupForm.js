@@ -1,7 +1,5 @@
-// src/SignupForm.js
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
-import './SignupForm.css'; // Import the custom CSS file
+import { Form, Button, Container, Row, Col, Card, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 
 const SignupForm = () => {
@@ -52,10 +50,10 @@ const SignupForm = () => {
         if (!response.ok) {
           throw new Error(data.error.message);
         }
-        history('/signin')
         console.log('Form submitted:', data);
         setSuccess('Signup successful! Please check your email to verify your account.');
         setError(null);
+        history('/signin');
       } catch (error) {
         console.error('Error signing up:', error.message);
         setError(`Error: ${error.message}`);
@@ -68,10 +66,10 @@ const SignupForm = () => {
   return (
     <Container className="mt-5">
       <Row className="justify-content-md-center">
-        <Col md="4">
-          <Card>
+        <Col md="6" lg="4">
+          <Card className="border-2 rounded-3 shadow-sm">
             <Card.Body>
-              <h2 className="mb-4 text-center">SignUp</h2>
+              <h2 className="mb-4 text-center">Sign Up</h2>
               <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Form.Group controlId="formEmail" className="mb-3">
                   <Form.Control
@@ -81,6 +79,7 @@ const SignupForm = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    className="border-primary"
                   />
                   <Form.Control.Feedback type="invalid">
                     Please enter a valid email address.
@@ -95,6 +94,7 @@ const SignupForm = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
+                    className="border-primary"
                   />
                   <Form.Control.Feedback type="invalid">
                     Please enter a password.
@@ -109,17 +109,18 @@ const SignupForm = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
+                    className="border-primary"
                   />
                   <Form.Control.Feedback type="invalid">
                     Passwords do not match.
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                {error && <div className="alert alert-danger">{error}</div>}
-                {success && <div className="alert alert-success">{success}</div>}
+                {error && <Alert variant="danger">{error}</Alert>}
+                {success && <Alert variant="success">{success}</Alert>}
 
                 <div className="d-grid">
-                  <Button variant="primary" type="submit" className="custom-button mb-3">
+                  <Button variant="primary" type="submit" className="mb-3" style={{ backgroundColor: 'purple', borderColor: 'purple' }}>
                     Sign up
                   </Button>
                 </div>

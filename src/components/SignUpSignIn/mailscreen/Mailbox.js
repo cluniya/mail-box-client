@@ -1,10 +1,8 @@
-// src/components/SignUpSignIn/mailscreen/Mailbox.js
 import React, { useState } from 'react';
-import { Button, ListGroup, Modal } from 'react-bootstrap';
+import { Button, ListGroup, Modal, Container, Row, Col, Card } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useMails from '../../../hooks/useMails';
-import './Mailbox.css'; // Add custom styles
 
 const Mailbox = () => {
   const [selectedMail, setSelectedMail] = useState(null);
@@ -38,44 +36,51 @@ const Mailbox = () => {
   const mailList = location.pathname === '/sent' ? sentMails : mails;
 
   return (
-    <div className="mailbox-container">
-      <div className="mailbox-header">
-        <h2>{location.pathname === '/sent' ? 'Sent' : 'Inbox'}</h2>
-        <Button variant="primary" onClick={handleComposeClick}>
-          Compose
-        </Button>
-      </div>
-      <div className="mailbox-content">
-        <div className="mail-list">
-          <ListGroup>
-            {mailList.map((mail) => (
-              <ListGroup.Item
-                key={mail.id}
-                action
-                onClick={() => handleMailClick(mail)}
-                className={!mail.read ? 'unread-mail' : ''}
-              >
-                <strong>{mail.senderEmail}</strong> - {mail.subject}
-                {!mail.read && <span className="blue-dot"></span>}
-                <Button variant="danger" onClick={() => handleDeleteMail(mail.id)}>
-                  Delete
-                </Button>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </div>
-        <Modal show={showMailModal} onHide={handleCloseModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>{selectedMail?.subject}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>{selectedMail?.content}</p>
-            <p>From: {selectedMail?.senderEmail}</p>
-            <p>{new Date(selectedMail?.timestamp).toLocaleString()}</p>
-          </Modal.Body>
-        </Modal>
-      </div>
-    </div>
+    <Container fluid className="mt-4">
+      <Row className="justify-content-center">
+        <Col lg={8} md={10}>
+          <Card className="shadow-sm">
+            <Card.Header className="d-flex justify-content-between align-items-center">
+              <h2 className="mb-0">{location.pathname === '/sent' ? 'Sent' : 'Inbox'}</h2>
+              <Button variant="primary" onClick={handleComposeClick}>
+                Compose
+              </Button>
+            </Card.Header>
+            <Card.Body>
+              <ListGroup variant="flush">
+                {mailList.map((mail) => (
+                  <ListGroup.Item
+                    key={mail.id}
+                    action
+                    onClick={() => handleMailClick(mail)}
+                    className={`d-flex justify-content-between align-items-center ${!mail.read ? 'bg-light' : ''}`}
+                  >
+                    <div>
+                      <strong>{mail.senderEmail}</strong> - {mail.subject}
+                      {!mail.read && <span className="badge bg-primary ms-2">New</span>}
+                    </div>
+                    <Button variant="danger" size="sm" onClick={() => handleDeleteMail(mail.id)}>
+                      Delete
+                    </Button>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      <Modal show={showMailModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedMail?.subject}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{selectedMail?.content}</p>
+          <p><strong>From:</strong> {selectedMail?.senderEmail}</p>
+          <p><strong>Received:</strong> {new Date(selectedMail?.timestamp).toLocaleString()}</p>
+        </Modal.Body>
+      </Modal>
+    </Container>
   );
 };
 
