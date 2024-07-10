@@ -29,7 +29,7 @@ const App = () => {
           <Sidebar showSidebar={showSidebar} />
           <div className="main-content flex-grow-1 pt-2 ">
             <Routes>
-              <Route path="/" element={<Mailbox />} />
+              <Route path="/" element={<SignupForm />} />
               <Route path="/unread" element={<Mailbox />} />
               <Route path="/inbox" element={<Mailbox />} />
               <Route path="/starred" element={<Mailbox />} />

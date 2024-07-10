@@ -1,7 +1,6 @@
-// src/components/SignUpSignIn/LoginForm.js
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
-import { useNavigate ,Link} from 'react-router-dom'; // Import useNavigate hook
+import { Form, Button, Container, Row, Col, Card, Modal, Alert } from 'react-bootstrap';
+import { useNavigate, Link } from 'react-router-dom';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +10,7 @@ const LoginForm = () => {
 
   const [validated, setValidated] = useState(false);
   const [error, setError] = useState(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const API_KEY = 'AIzaSyAl1NubGXzqIfmpo4ldoaV4r5PZkooQpBg';
 
@@ -22,7 +22,7 @@ const LoginForm = () => {
     });
   };
 
-  const history = useNavigate(); // Initialize useNavigate hook
+  const history = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,9 +51,13 @@ const LoginForm = () => {
         }
         console.log('Login successful:', data);
         setError(null);
-        localStorage.setItem('token', data.idToken); // Store token in localStorage
-        localStorage.setItem('email', data.email); // Store token in localStorage
-        history('/dummy'); // Redirect to dummy screen upon successful login
+        localStorage.setItem('token', data.idToken);
+        localStorage.setItem('email', data.email);
+        setShowSuccessPopup(true);
+        setTimeout(() => {
+          setShowSuccessPopup(false);
+          history('/dummy');
+        }, 3000);
       } catch (error) {
         console.error('Error logging in:', error.message);
         setError(`${error.message}`);
@@ -65,8 +69,8 @@ const LoginForm = () => {
   return (
     <Container className="mt-5">
       <Row className="justify-content-md-center">
-        <Col md="4">
-          <Card>
+        <Col md="6" lg="4">
+          <Card className="border-2 rounded-3 shadow-sm">
             <Card.Body>
               <h2 className="mb-4 text-center">Login</h2>
               <Form noValidate validated={validated} onSubmit={handleSubmit}>
@@ -78,6 +82,7 @@ const LoginForm = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    className="border-primary"
                   />
                   <Form.Control.Feedback type="invalid">
                     Please enter a valid email address.
@@ -92,18 +97,18 @@ const LoginForm = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
+                    className="border-primary"
                   />
                   <Form.Control.Feedback type="invalid">
                     Please enter your password.
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                {error && <div className="alert alert-danger">{error}</div>}
+                {error && <Alert variant="danger">{error}</Alert>}
 
                 <div className="d-grid">
-                  <Button variant="primary" type="submit" className="custom-button mb-3">
-                    Log in
-                  </Button>
+                <Button style={{ backgroundColor: 'purple', borderColor: 'purple' }} type="submit" className="mb-3">Log in
+</Button>
                 </div>
                 <div className="text-center">
                   <Link to="/" className="text-muted"> Create New Account</Link><br/>
@@ -114,6 +119,13 @@ const LoginForm = () => {
           </Card>
         </Col>
       </Row>
+
+      <Modal show={showSuccessPopup} onHide={() => setShowSuccessPopup(false)} centered>
+        <Modal.Body className="text-center">
+          <h4>Login Successful!</h4>
+          <p>You will be redirected shortly...</p>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };
